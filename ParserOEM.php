@@ -105,9 +105,8 @@ class ParserOEM implements iJob
             require_once(dirname(__FILE__) . "/../parse/sites/AutotradeSite.php");
 
             $autotradeSite = new AutotradeSite($oem, 0);
-            $oem = $autotradeSite->checkOem($oem);
             $site = $autotradeSite->getSite(29);                         //получение сайта
-            $autotradeSite->getFirmName($site['firm_id']);                   //получение имени фирмы из бд
+            $autotradeSite->getFirmName($site['firm_id']);               //получение имени фирмы из бд
             $url = $site['url'] . '/krasnoyarsk/autopart/' . $oem;
             $this->debug_url = $url;
             $html = file_get_html($url);
@@ -125,7 +124,6 @@ class ParserOEM implements iJob
             echo "Error" . $e->getMessage();
             throw $e;
         }
-//        var_dump($data);
         return($data);
     }
 
@@ -135,11 +133,10 @@ class ParserOEM implements iJob
         try {
             require_once(dirname(__FILE__) . "/../parse/sites/AutoLeaderSite.php");
 
-            $this->status_no_id = 0;                                                           // вычисляем максимально достигнутый $status_no_id для сайта
+            $this->status_no_id = 0;                                                   // вычисляем максимально достигнутый $status_no_id для сайта
             $autoLeaderSite = new AutoLeaderSite($oem, 0);
-            $oem = $autoLeaderSite->checkOem($oem);
-            $site = $autoLeaderSite->getSite(180);                                         //получение сайта
-            $autoLeaderSite->getFirmName($site['firm_id']);                                    //получение имени фирмы из бд
+            $site = $autoLeaderSite->getSite(180);                                     //получение сайта
+            $autoLeaderSite->getFirmName($site['firm_id']);                            //получение имени фирмы из бд
             $url = $site['url'] . '/catalog/search/?query=' . $oem;
             $cookie_fiz = '_identity=49fe6...';
 //            $cookie_ur = '_identity=ef042ce55...';
@@ -164,7 +161,6 @@ class ParserOEM implements iJob
             echo "Error" . $e->getMessage();
             throw $e;
         }
-//        var_dump($data);
         return($data);
     }
 
@@ -175,9 +171,8 @@ class ParserOEM implements iJob
             require_once(dirname(__FILE__) . "/../parse/sites/ForvardAvtoSite.php");
 
             $forvardAvtoSite = new ForvardAvtoSite($oem, 0);
-            $oem = $forvardAvtoSite->checkOem($oem);
             $site = $forvardAvtoSite->getSite(181);                                      //получение сайта
-            $forvardAvtoSite->getFirmName($site['firm_id']);                                 //получение имени фирмы из бд
+            $forvardAvtoSite->getFirmName($site['firm_id']);                             //получение имени фирмы из бд
             $url = $site['url'] . '/catalog/search/?q=' . $oem . '&how=r';
             $this->debug_url = $url;
 
