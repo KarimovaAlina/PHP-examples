@@ -25,26 +25,25 @@ class AutoLeaderSite extends SiteBaseOem
     {
         $table_rows = $html->find('.catalog-products article');
         if ($table_rows) {
-//            echo 'count(table_rows): ' . count($table_rows) . "<br>\r\n";;
             $j = 0;
+
+            $query = "SELECT city.name_city
+            FROM city
+            WHERE id = '$this->c_id'";
+            $c_name = db::executeRaw($query);
 
             for ($i = 0; $i < count($table_rows); $i++) {
                 $addresses = '';
                 $row = $table_rows[$i];
-//            if ($row->find('.available-warehouses .active', 1)) {
                 $cities = $row->find('.available-warehouses thead');
 
                 foreach ($cities as $index => $city) {
-                    if (trim(strip_tags($city->find('td', 0)->innertext)) == 'Красноярск') {
+                    if (trim(strip_tags($city->find('td', 0)->innertext)) == $c_name['name_city']) {
 
                         $detail_url = $row->find('.content a', 0)->href;
-//                        echo 'detail_url: ' . $detail_url . "<br>\r\n";;
                         $full_info = trim(strip_tags($row->find('.content a', 0)->innertext));
                         $brand = trim(strip_tags($row->find('.brand p', 0)->innertext));
                         $brand = strtoupper($brand);
-//                $cities = $row->find('.available-warehouses thead');
-
-//                    $filials = $row->find('.available-warehouses .active', 1);
                         $filials = $city->next_sibling();
                         $filial_rows = $filials->find('tr');
 
@@ -77,7 +76,6 @@ class AutoLeaderSite extends SiteBaseOem
                     }
                 }
             }
-//        var_dump($data);
             $html->clear();
             $data = array_values($data);
             return $data;
