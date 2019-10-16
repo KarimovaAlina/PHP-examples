@@ -45,16 +45,16 @@ class ParserOEM implements iJob
     public function handle()
     {
         try {
-            if ($this->s_id == 29) $arr = $this->parseAutotradePrice($this->oem);
-            if ($this->s_id == 180) $arr = $this->parseAutoLeaderPrice($this->oem);
-            if ($this->s_id == 181) $arr = $this->parseForvardAvtoPrice($this->oem);
-//            if ($this->s_id == 187) $arr = $this->parseANovostPrice($this->oem);
-//            if ($this->s_id == 200) $arr = $this->parseBoostMastersPrice($this->oem);
-//            if ($this->s_id == 201) $arr = $this->parseRotorPrice($this->oem);
-//            if ($this->s_id == 203) $arr = $this->parseUgKoreaPrice($this->oem);
-//            if ($this->s_id == 204) $arr = $this->parseAvtoMPrice($this->oem);
-//            if ($this->s_id == 205) $arr = $this->parseAutoKoreaPrice($this->oem);
-//            if ($this->s_id == 206) $arr = $this->parseKorea124Price($this->oem);
+            if ($this->s_id == 29) $arr = $this->parseAutotradePrice($this->oem, 1); break;
+            if ($this->s_id == 180) $arr = $this->parseAutoLeaderPrice($this->oem); break;
+            if ($this->s_id == 181) $arr = $this->parseForvardAvtoPrice($this->oem); break;
+//            if ($this->s_id == 187) $arr = $this->parseANovostPrice($this->oem); break;
+//            if ($this->s_id == 200) $arr = $this->parseBoostMastersPrice($this->oem); break;
+//            if ($this->s_id == 201) $arr = $this->parseRotorPrice($this->oem); break;
+//            if ($this->s_id == 203) $arr = $this->parseUgKoreaPrice($this->oem); break;
+//            if ($this->s_id == 204) $arr = $this->parseAvtoMPrice($this->oem); break;
+//            if ($this->s_id == 205) $arr = $this->parseAutoKoreaPrice($this->oem); break;
+//            if ($this->s_id == 206) $arr = $this->parseKorea124Price($this->oem); break;
 
             if ($this->debug) {
                 $this->debug_list = $arr;
@@ -99,26 +99,35 @@ class ParserOEM implements iJob
     }
 
 
-    public function parseAutotradePrice($oem)
+    public function parseAutotradePrice($oem, $c_id)
     {
         try {
             require_once(dirname(__FILE__) . "/../parse/sites/AutotradeSite.php");
 
+            switch ($c_id) {
+                case 1:
+                    $suf = '/krasnoyarsk/find/';
+                    break;
+                case 2:
+                    $suf = '/novosibirsk/find/';
+                    break;
+                case 4:
+                    $suf = '/moscow/find/';
+                    break;
+            }
             $autotradeSite = new AutotradeSite($oem, 0);
-            $site = $autotradeSite->getSite(29);                         //получение сайта
-            $autotradeSite->getFirmName($site['firm_id']);               //получение имени фирмы из бд
-            $url = $site['url'] . '/krasnoyarsk/autopart/' . $oem;
+            $site = $autotradeSite->getSite($this->s_id);                         //получение сайта
+            $autotradeSite->getFirmName($site['firm_id']);                   //получение имени фирмы из бд
+            $url = $site['url'] . $suf . $oem;
             $this->debug_url = $url;
             $html = file_get_html($url);
-            if (!$html) {
-                throw new Exception();
-            }
+
             if ($html) {
-                $data = $autotradeSite->ParseDataPriceWAddress($html);       //получение данных по найденным деталям
+                $data = $autotradeSite->ParseDataPriceWAddress($html, $c_id);  //получение данных по найденным деталям
                 $this->list = $autotradeSite->list;
                 $html->clear();
                 unset($html);
-            }
+            } else throw new Exception();
 
         } catch (Exception $e) {
             echo "Error" . $e->getMessage();
@@ -133,13 +142,12 @@ class ParserOEM implements iJob
         try {
             require_once(dirname(__FILE__) . "/../parse/sites/AutoLeaderSite.php");
 
-            $this->status_no_id = 0;                                                   // вычисляем максимально достигнутый $status_no_id для сайта
             $autoLeaderSite = new AutoLeaderSite($oem, 0);
-            $site = $autoLeaderSite->getSite(180);                                     //получение сайта
-            $autoLeaderSite->getFirmName($site['firm_id']);                            //получение имени фирмы из бд
+            $site = $autoLeaderSite->getSite($this->s_id);                                         //получение сайта
+            $autoLeaderSite->getFirmName($site['firm_id']);                                    //получение имени фирмы из бд
             $url = $site['url'] . '/catalog/search/?query=' . $oem;
             $cookie_fiz = '_identity=49fe6...';
-//            $cookie_ur = '_identity=ef042ce55...';
+//            $cookie_ur = '_identity=ef042...';
             $html = $autoLeaderSite->getUrlContent($url, $cookie_fiz);
 //            $htmlUr = $autoLeaderSite->getUrlContent($url, $cookie_ur);
 
@@ -171,30 +179,23 @@ class ParserOEM implements iJob
             require_once(dirname(__FILE__) . "/../parse/sites/ForvardAvtoSite.php");
 
             $forvardAvtoSite = new ForvardAvtoSite($oem, 0);
-            $site = $forvardAvtoSite->getSite(181);                                      //получение сайта
-            $forvardAvtoSite->getFirmName($site['firm_id']);                             //получение имени фирмы из бд
+            $site = $forvardAvtoSite->getSite($this->s_id);                                  //получение сайта
+            $forvardAvtoSite->getFirmName($site['firm_id']);                                 //получение имени фирмы из бд
             $url = $site['url'] . '/catalog/search/?q=' . $oem . '&how=r';
             $this->debug_url = $url;
 
             $html = file_get_html($url);
 
-            if (!$html) {
-                throw new Exception();
-            }
-
             if ($html) {
-                $data = $forvardAvtoSite->ParseDataPriceWAddress($html);       //получение данных по найденным деталям
+                $data = $forvardAvtoSite->ParseDataPriceWAddress($html);                             //получение данных по найденным деталям
                 $this->list = $forvardAvtoSite->list;
                 unset($html);
-            }
-
+            } else throw new Exception();
 
         } catch (Exception $e) {
             echo "Error" . $e->getMessage();
             throw $e;
         }
-//        var_dump($data);
         return($data);
-
     }
 }
