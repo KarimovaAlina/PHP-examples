@@ -9,6 +9,7 @@
 class SiteBaseOem
 {
     public $oem = '';
+    public $c_id = '';
     public $r_id = '';
     public $list = [];
     public $f_id = '';
@@ -17,6 +18,7 @@ class SiteBaseOem
     public $f_ch_id = '';
     public $site_url = '';
     public $detail_list = [];
+    public $site_city_name = '';
     private $status_no_id = 0; // при проходке сайта, вычисляется, почему не нашлась там запчасть
 
 
@@ -29,7 +31,7 @@ class SiteBaseOem
 
     public function checkOem ($oem) {
         if ($oem) {
-            $oem = preg_replace("/[^A-Za-z0-9]/", "", $oem);
+            $oem = preg_replace("/[^A-Za-z0-9-]/", "", $oem);
         }
         return $oem;
     }
@@ -96,6 +98,8 @@ class SiteBaseOem
         $this->site_url = $site['url'];
         $this->f_ch_id = $site['firm_chain_id'];
         $this->f_id = $site['firm_id'];
+        $this->site_city_name = $site['name_city'];
+        $this->c_id = $site['city'];
         return $site;
     }
 
